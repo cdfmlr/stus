@@ -6,9 +6,9 @@
 package model
 
 type Teacher struct {
-	Tid   string `gorm:"PRIMARY_KEY"` // 教师id
-	Tname string // 姓名
-	Tdept string // 所在系
-	Tsex  bool   // 性别
-	Tpro  string // 职称：讲师、教授这些，professional title
+	Tid   string `gorm:"PRIMARY_KEY";json:"tid"` // 教师id
+	Tname string `json:"tname"`                  // 姓名
+	Tdept string `json:"tdept"`                  // 所在系
+	Tsex  bool   `json:"tsex"`                   // 性别
+	Tpro  string `json:"tpro"`                   // 职称：讲师、教授这些，professional title
 }

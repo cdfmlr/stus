@@ -6,7 +6,7 @@
 package model
 
 type Passwd struct {
-	Utype    string `gorm:"PRIMARY_KEY"` // 用户类型，student 或 teacher 或 admin
-	Uid      string `gorm:"PRIMARY_KEY"` // 用户id，根据 Utype 的不同，取 Sid 或 Tid 或 Aid
-	Password string // 密码，储存摘要加密的值
+	Utype    string `gorm:"PRIMARY_KEY";json:"utype"` // 用户类型，student 或 teacher 或 admin
+	Uid      string `gorm:"PRIMARY_KEY";json:"uid"`   // 用户id，根据 Utype 的不同，取 Sid 或 Tid 或 Aid
+	Password string `json:"password"`                 // 密码，储存摘要加密的值
 }

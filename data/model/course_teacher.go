@@ -6,8 +6,8 @@
 package model
 
 type CourseTeacherRelation struct {
-	Cid string `gorm:"primary_key"` // 课程
-	Tid string `gorm:"primary_key"` // 教师
+	Cid string `gorm:"primary_key";json:"cid"` // 课程
+	Tid string `gorm:"primary_key";json:"tid"` // 教师
 
 	Course  Course  `gorm:"foreignkey:Cid; association_foreignkey:Cid"`
 	Teacher Teacher `gorm:"foreignkey:Tid; association_foreignkey:Tid"`
