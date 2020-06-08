@@ -53,6 +53,7 @@ func (a CoreApi) ServeStudent(w http.ResponseWriter, r *http.Request) {
 		query := r.FormValue("query")
 		if query == "" {
 			response.ResponseJson(&w, map[string]string{"error": "unexpected empty query"})
+			return
 		}
 		response.ResponseJson(&w, SerCoreStudent{a.DB}.Read(query))
 		return
@@ -69,6 +70,7 @@ func (a CoreApi) ServeStudent(w http.ResponseWriter, r *http.Request) {
 		query := r.FormValue("query")
 		if query == "" {
 			response.ResponseJson(&w, map[string]string{"error": "unexpected empty query"})
+			return
 		}
 		SerCoreStudent{a.DB}.Delete(query)
 		responseSuccess(w)
@@ -93,6 +95,7 @@ func (a CoreApi) ServeCourse(w http.ResponseWriter, r *http.Request) {
 		query := r.FormValue("query")
 		if query == "" {
 			response.ResponseJson(&w, map[string]string{"error": "unexpected empty query"})
+			return
 		}
 		response.ResponseJson(&w, SerCoreCourse{a.DB}.Read(query))
 		return
@@ -109,6 +112,7 @@ func (a CoreApi) ServeCourse(w http.ResponseWriter, r *http.Request) {
 		query := r.FormValue("query")
 		if query == "" {
 			response.ResponseJson(&w, map[string]string{"error": "unexpected empty query"})
+			return
 		}
 		SerCoreCourse{a.DB}.Delete(query)
 		responseSuccess(w)
@@ -133,6 +137,7 @@ func (a CoreApi) ServeTeacher(w http.ResponseWriter, r *http.Request) {
 		query := r.FormValue("query")
 		if query == "" {
 			response.ResponseJson(&w, map[string]string{"error": "unexpected empty query"})
+			return
 		}
 		response.ResponseJson(&w, SerCoreTeacher{a.DB}.Read(query))
 		return
@@ -149,6 +154,7 @@ func (a CoreApi) ServeTeacher(w http.ResponseWriter, r *http.Request) {
 		query := r.FormValue("query")
 		if query == "" {
 			response.ResponseJson(&w, map[string]string{"error": "unexpected empty query"})
+			return
 		}
 		SerCoreTeacher{a.DB}.Delete(query)
 		responseSuccess(w)
@@ -173,6 +179,7 @@ func (a CoreApi) ServeCourseTeacherRelation(w http.ResponseWriter, r *http.Reque
 		query := r.FormValue("query")
 		if query == "" {
 			response.ResponseJson(&w, map[string]string{"error": "unexpected empty query"})
+			return
 		}
 		response.ResponseJson(&w, SerCoreCourseTeacherRelation{a.DB}.Read(query))
 		return
@@ -189,6 +196,7 @@ func (a CoreApi) ServeCourseTeacherRelation(w http.ResponseWriter, r *http.Reque
 		query := r.FormValue("query")
 		if query == "" {
 			response.ResponseJson(&w, map[string]string{"error": "unexpected empty query"})
+			return
 		}
 		SerCoreCourseTeacherRelation{a.DB}.Delete(query)
 		responseSuccess(w)
@@ -213,6 +221,7 @@ func (a CoreApi) ServeStudentCourseRelation(w http.ResponseWriter, r *http.Reque
 		query := r.FormValue("query")
 		if query == "" {
 			response.ResponseJson(&w, map[string]string{"error": "unexpected empty query"})
+			return
 		}
 		response.ResponseJson(&w, SerCoreStudentCourseRelation{a.DB}.Read(query))
 		return
@@ -229,6 +238,7 @@ func (a CoreApi) ServeStudentCourseRelation(w http.ResponseWriter, r *http.Reque
 		query := r.FormValue("query")
 		if query == "" {
 			response.ResponseJson(&w, map[string]string{"error": "unexpected empty query"})
+			return
 		}
 		SerCoreStudentCourseRelation{a.DB}.Delete(query)
 		responseSuccess(w)
