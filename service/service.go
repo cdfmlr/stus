@@ -12,6 +12,7 @@ import (
 	"strings"
 	"stus/data/model"
 	"stus/service/core"
+	"stus/service/student"
 	"stus/util/logging"
 	"stus/util/response"
 )
@@ -22,8 +23,9 @@ type Service struct {
 
 	tokenHolder *AccessTokenHolder
 
-	coreApiServer *core.CoreApi
-	fileServer    http.Handler
+	coreApiServer    *core.CoreApi
+	studentApiServer *student.StudentApi
+	fileServer       http.Handler
 }
 
 func NewService(DB *gorm.DB, staticDir string) *Service {
@@ -33,11 +35,21 @@ func NewService(DB *gorm.DB, staticDir string) *Service {
 
 	s.fileServer = http.FileServer(http.Dir(s.StaticDir))
 	s.coreApiServer = core.NewCoreApi(DB)
+	s.studentApiServer = student.NewStudentApi(DB)
 	return s
 }
 
 func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	logging.Info("HTTP Serve: ", r.Method, r.URL.Path)
+
+	// CORS
+	if r.Method == "OPTIONS" {
+		w.Header().Add("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		w.Header().Add("Access-Control-Allow-Headers", "token, Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		w.Write([]byte{})
+		return
+	}
 
 	if strings.HasPrefix(r.URL.Path, "/api") {
 		if strings.HasPrefix(r.URL.Path, "/api/login") {
@@ -47,11 +59,11 @@ func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		// 除了 login 的操作都要检查 token
 		user, err := s.checkAccess(r)
-		if user.Uid != "" && err != nil {
+		if err != nil {
 			response.ResponseJson(&w, map[string]string{"error": err.Error()})
 			return
 		} else {
-			//logging.Info("Request from user:", *user)
+			logging.Info("Request from user:", *user)
 		}
 
 		switch {
