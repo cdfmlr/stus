@@ -40,7 +40,7 @@ func (a CoreApi) ServeStudent(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		st := &model.Student{}
-		if err := json.Unmarshal([]byte(r.FormValue("students")), st); err != nil {
+		if err := json.Unmarshal([]byte(r.FormValue("record")), st); err != nil {
 			response.ResponseJson(&w, map[string]string{"error": err.Error()})
 			return
 		}
@@ -59,7 +59,7 @@ func (a CoreApi) ServeStudent(w http.ResponseWriter, r *http.Request) {
 		return
 	case "PUT":
 		var st []model.Student
-		if err := json.Unmarshal([]byte(r.FormValue("students")), &st); err != nil {
+		if err := json.Unmarshal([]byte(r.FormValue("record")), &st); err != nil {
 			response.ResponseJson(&w, map[string]string{"error": err.Error()})
 			return
 		}
