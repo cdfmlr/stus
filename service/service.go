@@ -75,6 +75,9 @@ func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			//}
 			http.StripPrefix("/api/core", s.coreApiServer).ServeHTTP(w, r)
 			return
+		case strings.HasPrefix(r.URL.Path, "/api/student"):
+			http.StripPrefix("/api/student", s.studentApiServer).ServeHTTP(w, r)
+			return
 		default:
 			http.NotFound(w, r)
 			return
