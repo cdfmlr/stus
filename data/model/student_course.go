@@ -6,8 +6,8 @@
 package model
 
 type StudentCourseRelation struct {
-	Sid    string  `gorm:"PRIMARY_KEY";json:"sid"` // 学生id
-	Cid    string  `gorm:"PRIMARY_KEY";json:"cid"` // 课程id
+	Sid    string  `gorm:"PRIMARY_KEY" json:"sid"` // 学生id
+	Cid    string  `gorm:"PRIMARY_KEY" json:"cid"` // 课程id
 	Result float32 `json:"result"`                 // 成绩
 
 	Student Student `gorm:"foreignkey:Sid; association_foreignkey:Sid"`

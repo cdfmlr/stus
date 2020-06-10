@@ -6,7 +6,7 @@
 package model
 
 type Student struct {
-	Sid    string `gorm:"PRIMARY_KEY";json:"sid"` // 学生id（学号）
+	Sid    string `gorm:"PRIMARY_KEY" json:"sid"` // 学生id（学号）
 	Sname  string `json:"sname"`                  // 姓名
 	Sdept  string `json:"sdept"`                  // 所在系
 	Smajor string `json:"smajor"`                 // 专业

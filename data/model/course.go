@@ -6,7 +6,7 @@
 package model
 
 type Course struct {
-	Cid    string  `gorm:"PRIMARY_KEY";json:"cid"` // 课程id
+	Cid    string  `gorm:"PRIMARY_KEY" json:"cid"` // 课程id
 	Cname  string  `json:"cname"`                  // 课程名称
 	Ctype  string  `json:"ctype"`                  // 课程类型：比如"必修"，"公选"什么的
 	Cpoint float32 `json:"cpoint"`                 // 学分
