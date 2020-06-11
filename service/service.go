@@ -13,6 +13,7 @@ import (
 	"stus/data/model"
 	"stus/service/core"
 	"stus/service/student"
+	"stus/service/teacher"
 	"stus/util/logging"
 	"stus/util/response"
 )
@@ -25,6 +26,7 @@ type Service struct {
 
 	coreApiServer    *core.CoreApi
 	studentApiServer *student.StudentApi
+	teacherApiServer *teacher.TeacherApi
 	fileServer       http.Handler
 }
 
@@ -36,6 +38,7 @@ func NewService(DB *gorm.DB, staticDir string) *Service {
 	s.fileServer = http.FileServer(http.Dir(s.StaticDir))
 	s.coreApiServer = core.NewCoreApi(DB)
 	s.studentApiServer = student.NewStudentApi(DB)
+	s.teacherApiServer = teacher.NewTeacherApi(DB)
 	return s
 }
 
@@ -65,18 +68,17 @@ func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		} else {
 			logging.Info("Request from user:", *user)
 		}
+		//logging.Debug(fmt.Sprintf("%#v", r))
 
 		switch {
 		case strings.HasPrefix(r.URL.Path, "/api/core"):
-			// TODO: 在实现 /api/student, /api/teacher 等具体接口后，为确保安全，应该启用以下检测：
-			////  `/api/core` 只因该被管理员使用！
-			//if user.Utype != "admin" {
-			//	response.ResponseJson(&w, map[string]string{"error": "permission denied"})
-			//}
 			http.StripPrefix("/api/core", s.coreApiServer).ServeHTTP(w, r)
 			return
 		case strings.HasPrefix(r.URL.Path, "/api/student"):
 			http.StripPrefix("/api/student", s.studentApiServer).ServeHTTP(w, r)
+			return
+		case strings.HasPrefix(r.URL.Path, "/api/teacher"):
+			http.StripPrefix("/api/teacher", s.teacherApiServer).ServeHTTP(w, r)
 			return
 		default:
 			http.NotFound(w, r)

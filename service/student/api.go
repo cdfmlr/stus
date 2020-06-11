@@ -24,6 +24,10 @@ func (s StudentApi) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "/exam_result":
 		s.examResult(w, r)
+	case "/courses":
+		s.courses(w, r)
+	case "/enrolled_courses":
+		s.enrolledCourses(w, r)
 	}
 }
 
@@ -53,4 +57,53 @@ type ExamResult struct {
 	Cid    string  `json:"cid"`
 	Cname  string  `json:"cname"`
 	Result float32 `json:"result"`
+}
+
+func (s StudentApi) courses(w http.ResponseWriter, r *http.Request) {
+	var courseTeachers []model.CourseTeacherRelation
+	s.DB.Preload("Teacher").Preload("Course").Find(&courseTeachers)
+
+	result := make([]CoursesResp, 0)
+	for _, ct := range courseTeachers {
+		result = append(result, CoursesResp{
+			Course:  ct.Course,
+			Teacher: ct.Teacher,
+		})
+	}
+
+	response.ResponseJson(&w, result)
+}
+
+func (s StudentApi) enrolledCourses(w http.ResponseWriter, r *http.Request) {
+	sid := r.FormValue("sid")
+	if sid == "" {
+		response.ResponseJson(&w, map[string]string{"error": "unexpected empty sid"})
+		return
+	}
+
+	var studentCourses []model.StudentCourseRelation
+	s.DB.Where("sid = ?", sid).Find(&studentCourses)
+
+	var cids []string
+	for _, v := range studentCourses {
+		cids = append(cids, v.Cid)
+	}
+
+	var courseTeachers []model.CourseTeacherRelation
+	s.DB.Where("cid IN (?)", cids).Preload("Teacher").Preload("Course").Find(&courseTeachers)
+
+	result := make([]CoursesResp, 0)
+	for _, ct := range courseTeachers {
+		result = append(result, CoursesResp{
+			Course:  ct.Course,
+			Teacher: ct.Teacher,
+		})
+	}
+
+	response.ResponseJson(&w, result)
+}
+
+type CoursesResp struct {
+	model.Course
+	model.Teacher
 }
