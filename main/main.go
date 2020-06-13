@@ -6,15 +6,28 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
+	"strconv"
 	"stus/data"
 	"stus/service"
 )
 
 func main() {
-	database := data.NewDatabase("mysql", "c:000123@/stus?charset=utf8&parseTime=True&loc=Local")
-	staticDir := "/Users/c/Projects/stus/"
+	var port int
+	var staticDir string
+	var dbDialect string
+	var dbSource string
+
+	flag.IntVar(&port, "port", 9001, "`port` for service")
+	flag.StringVar(&staticDir, "static", "./static", "static (web ui) `dist` path")
+	flag.StringVar(&dbDialect, "db_dialect", "mysql", "`dialect` of database. Expect one of mssql, mysql, postgres and sqlite")
+	flag.StringVar(&dbSource, "db_source", "c:000123@/stus?charset=utf8&parseTime=True&loc=Local", "database `source`")
+
+	flag.Parse()
+
+	database := data.NewDatabase(dbDialect, dbSource)
 
 	db, err := database.Open()
 	if err != nil {
@@ -22,9 +35,9 @@ func main() {
 	}
 	server := service.NewService(db, staticDir)
 
-	err = http.ListenAndServe(":9001", server)
+	fmt.Println("Listen and serve at http://0.0.0.0:" + strconv.Itoa(port))
+	err = http.ListenAndServe(":"+strconv.Itoa(port), server)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Listen and serve at http://0.0.0.0:9001")
 }
