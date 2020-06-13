@@ -2,7 +2,7 @@
 #
 # FILE:   install.sh
 # BY:     CDFMLR
-# UPDATE: 2020.06.16
+# UPDATE: 2020.06.14
 #
 # An Install Script for stus:
 #     - back-end:  https://github.com/cdfmlr/stus.git
@@ -84,14 +84,14 @@ echo "Build back-end..."
 cd src/stus/main
 go build main.go
 echo "Done."
-mv main ../../../dist/cifa
+mv main ../../../dist/stus
 cd ../../..
 
 # 编译前端
 echo ""
 echo "build front-end..."
 
-cd src/Cifa-front
+cd src/stus-front
 if command -v vue; then
     echo "vue cli installed. Skip."
 else
