@@ -43,7 +43,7 @@ func NewService(DB *gorm.DB, staticDir string) *Service {
 }
 
 func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	logging.Info("HTTP Serve: ", r.Method, r.URL.Path)
+	//logging.Info("HTTP Serve: ", r.Method, r.URL.Path)
 
 	// CORS
 	if r.Method == "OPTIONS" {
@@ -66,7 +66,10 @@ func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			response.ResponseJson(&w, map[string]string{"error": err.Error()})
 			return
 		} else {
-			logging.Info("Request from user:", *user)
+			//logging.Info("Request from user:", *user)
+			if user == nil {
+				logging.Info("user == nil")
+			}
 		}
 		//logging.Debug(fmt.Sprintf("%#v", r))
 
