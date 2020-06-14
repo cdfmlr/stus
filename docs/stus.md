@@ -513,7 +513,7 @@
 
 选择不同身份登录即可看到主要的操作页面，例如，学生登录后的个人信息主页：
 
-![stus 运行截图，学生信息界面](../Library/Application Support/typora-user-images/image-20200613163127326.png)
+![stus 运行截图，学生信息界面](https://tva1.sinaimg.cn/large/007S8ZIlgy1gfs7wfhybbj319j0u0h6a.jpg)
 
 教师登录后对所授的某一课程的管理页面：
 
