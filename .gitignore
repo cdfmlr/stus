@@ -13,3 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+/stus.puml
+.DS_Store
+docs/.DS_Store
+util/.DS_Store

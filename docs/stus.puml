@@ -1,0 +1,283 @@
+@startuml
+
+package data {
+    class Database << (S,Aquamarine) >> {
+        - dialect string
+        - source string
+
+        + Open() (*gorm.DB, error)
+
+    }
+
+    package model {
+        class Course << (S,Aquamarine) >> {
+            + Cid string
+            + Cname string
+            + Ctype string
+            + Cpoint float32
+            + Cweek string
+            + Ctime string
+            + Caddr string
+
+        }
+        class CourseTeacherRelation << (S,Aquamarine) >> {
+            + Cid string
+            + Tid string
+            + Course Course
+            + Teacher Teacher
+
+        }
+        class Passwd << (S,Aquamarine) >> {
+            + Utype string
+            + Uid string
+            + Password string
+
+        }
+        class Student << (S,Aquamarine) >> {
+            + Sid string
+            + Sname string
+            + Sdept string
+            + Smajor string
+            + Sage int
+            + Ssex bool
+            + Sgrade string
+            + Sclass string
+
+        }
+        class StudentCourseRelation << (S,Aquamarine) >> {
+            + Sid string
+            + Cid string
+            + Result float32
+            + Student Student
+            + Course Course
+
+        }
+        class Teacher << (S,Aquamarine) >> {
+            + Tid string
+            + Tname string
+            + Tdept string
+            + Tsex bool
+            + Tpro string
+
+        }
+
+        "CourseTeacherRelation""uses" o-- "Course"
+        "CourseTeacherRelation""uses" o-- "Teacher"
+        "StudentCourseRelation""uses" o-- "Course"
+        "StudentCourseRelation""uses" o-- "Student"
+    }
+    "Database" <-left- "model"
+}
+
+
+"data""uses" o-- "gorm.DB"
+
+
+package service {
+    class AccessToken << (S,Aquamarine) >> {
+        - expiresIn int64
+
+        + Token string
+        + User *model.Passwd
+        + LastTouch time.Time
+
+        + IsAvailable(DB *gorm.DB) bool
+
+    }
+    class AccessTokenHolder << (S,Aquamarine) >> {
+        - mux sync.Mutex
+        - accesses <font color=blue>map</font>[string]AccessToken
+        - expiresIn int64
+
+        + DB *gorm.DB
+
+        + Get(token string) (*model.Passwd, bool)
+        + New(user *model.Passwd) string
+        + CleanUnavailable() 
+
+    }
+    class Service << (S,Aquamarine) >> {
+        - tokenHolder *AccessTokenHolder
+        - coreApiServer *core.CoreApi
+        - studentApiServer *student.StudentApi
+        - teacherApiServer *teacher.TeacherApi
+        - fileServer http.Handler
+
+        + DB *gorm.DB
+        + StaticDir string
+
+        - checkAccess(r *http.Request) (*model.Passwd, error)
+        - login(w http.ResponseWriter, r *http.Request) 
+
+        + ServeHTTP(w http.ResponseWriter, r *http.Request) 
+
+    }
+
+    package teacher {
+        class CourseResp << (S,Aquamarine) >> {
+            + StudentNum int
+
+        }
+        class DataOfCourseResp << (S,Aquamarine) >> {
+            + Students []StudentWithResult
+            + Count int
+            + Average float32
+            + Best float32
+            + Worst float32
+            + NotPassCount float32
+
+        }
+        class StudentWithResult << (S,Aquamarine) >> {
+            + Result float32
+
+        }
+        class TeacherApi << (S,Aquamarine) >> {
+            + DB *gorm.DB
+
+            - courses(w http.ResponseWriter, r *http.Request)
+            - dataOfCourse(w http.ResponseWriter, r *http.Request)
+
+            + ServeHTTP(w http.ResponseWriter, r *http.Request)
+
+        }
+
+        "TeacherApi" -[hidden]-> "StudentWithResult"
+        "StudentWithResult" -[hidden]-> "DataOfCourseResp"
+        "DataOfCourseResp" -[hidden]-> "CourseResp"
+    }
+
+    package student {
+        class CoursesResp << (S,Aquamarine) >> {
+        }
+        class ExamResult << (S,Aquamarine) >> {
+            + Cid string
+            + Cname string
+            + Result float32
+
+        }
+        class StudentApi << (S,Aquamarine) >> {
+            + DB *gorm.DB
+
+            - examResult(w http.ResponseWriter, r *http.Request)
+            - courses(w http.ResponseWriter, r *http.Request)
+            - enrolledCourses(w http.ResponseWriter, r *http.Request)
+
+            + ServeHTTP(w http.ResponseWriter, r *http.Request)
+
+        }
+
+        "StudentApi" -[hidden]-> "CoursesResp"
+        "CoursesResp" -[hidden]-> "ExamResult"
+    }
+
+    package core {
+        class CoreApi << (S,Aquamarine) >> {
+            + DB *gorm.DB
+
+            + ServeHTTP(w http.ResponseWriter, r *http.Request)
+            + ServeStudent(w http.ResponseWriter, r *http.Request)
+            + ServeCourse(w http.ResponseWriter, r *http.Request)
+            + ServeTeacher(w http.ResponseWriter, r *http.Request)
+            + ServeCourseTeacherRelation(w http.ResponseWriter, r *http.Request)
+            + ServeStudentCourseRelation(w http.ResponseWriter, r *http.Request)
+
+        }
+
+        together {
+                class SerCoreCourse << (S,Aquamarine) >> {
+                    + DB *gorm.DB
+
+                    + Create(course *model.Course)
+                    + Read(query string) []model.Course
+                    + Update(courses []model.Course)
+                    + Delete(query string)
+
+                }
+                class SerCoreStudent << (S,Aquamarine) >> {
+                    + DB *gorm.DB
+
+                    + Create(student *model.Student)
+                    + Read(query string) []model.Student
+                    + Update(students []model.Student)
+                    + Delete(query string)
+
+                }
+                class SerCoreTeacher << (S,Aquamarine) >> {
+                    + DB *gorm.DB
+
+                    + Create(teacher *model.Teacher)
+                    + Read(query string) []model.Teacher
+                    + Update(teachers []model.Teacher)
+                    + Delete(query string)
+
+                }
+        }
+
+        together {
+                class SerCoreCourseTeacherRelation << (S,Aquamarine) >> {
+                    + DB *gorm.DB
+
+                    + Create(courseTeacherRelation *model.CourseTeacherRelation)
+                    + Read(query string) []model.CourseTeacherRelation
+                    + Update(courseTeacherRelations []model.CourseTeacherRelation)
+                    + Delete(query string)
+
+                }
+
+                class SerCoreStudentCourseRelation << (S,Aquamarine) >> {
+                    + DB *gorm.DB
+
+                    + Create(studentCourseRelation *model.StudentCourseRelation)
+                    + Read(query string) []model.StudentCourseRelation
+                    + Update(studentCourseRelations []model.StudentCourseRelation)
+                    + Delete(query string)
+
+                }
+        }
+
+        CoreApi <-- SerCoreCourse
+        CoreApi <-- SerCoreStudent
+        CoreApi <-- SerCoreTeacher
+        CoreApi <-- SerCoreCourseTeacherRelation
+        CoreApi <-- SerCoreStudentCourseRelation
+
+        CoreApi -[hidden]-> SerCoreCourse
+        SerCoreCourse -[hidden]-> SerCoreCourseTeacherRelation
+
+    }
+
+
+    "Service""uses" o-right- "AccessTokenHolder"
+    "AccessTokenHolder""uses" o-right- "AccessToken"
+
+    "Service""uses" o-down- "CoreApi"
+    "Service""uses" o-down- "StudentApi"
+    "Service""uses" o-down- "TeacherApi"
+
+}
+
+"service""uses" o-right- "gorm.DB"
+"service""uses" o-down- "http.Handler"
+
+package util {
+    package logging {
+        class Log << (F,Aquamarine) >> {}
+    }
+
+    package response {
+        class ResponseJson << (F,Aquamarine) >> {}
+    }
+}
+
+"service" <-- "util"
+"data" <-- "util"
+
+
+package main {
+    class main << (F,Aquamarine) >> {}
+}
+
+"main" <-up- "service"
+"main" <-up- "data"
+
+@enduml
