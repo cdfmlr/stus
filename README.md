@@ -22,6 +22,8 @@ The system is designed for three types of users, namely, academic administration
 - 教师对所授课程学生、成绩的统计、管理；
 - 学生对所修课程的成绩查询、以及选课系统。
 
+The front-end of stus is at https://github.com/cdfmlr/stus-front
+
 ## Getting Started
 
 - For **Linux / MacOS**:
